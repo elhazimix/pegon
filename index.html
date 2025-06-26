@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Transliterasi Pegon JM (Fonetik)</title>
+  <title>Transliterasi Pegon (Fonetik)</title>
   <style>
     body {
       font-family: sans-serif;
@@ -43,7 +43,7 @@
 </head>
 <body>
   <h1>Transliterasi Pegon JM (Fonetik)</h1>
-  <p>Tulis teks Latin di bawah ini. Hasil transliterasi otomatis muncul dalam huruf Pegon JM.</p>
+  <p>Ketik teks Latin di bawah ini, hasil akan muncul otomatis dalam tulisan Pegon JM.</p>
 
   <textarea id="input" placeholder="Contoh: jangan menyerah, tetap semangat!"></textarea>
   <button class="copy-btn" onclick="copyText('input')">Salin Teks Latin</button>
@@ -67,6 +67,8 @@
       v: "ف", w: "و", x: "كس", y: "ي", z: "ز",
     };
 
+    const vokal = ['a', 'i', 'u', 'e', 'o'];
+
     function ubahAngka(str) {
       return str.replace(/[0-9]/g, d => angkaArab[d]);
     }
@@ -80,14 +82,14 @@
     function transliterateKata(kata) {
       let lower = kata.toLowerCase();
 
-      // Awalan khusus (i, u, e, o, ke)
+      // Pola awalan khusus
       if (lower.startsWith("ke")) return "ك" + transliterateKata(lower.slice(2));
       if (lower.startsWith("i")) return "اي" + transliterateKata(lower.slice(1));
       if (lower.startsWith("u")) return "او" + transliterateKata(lower.slice(1));
       if (lower.startsWith("o")) return "او" + transliterateKata(lower.slice(1));
       if (lower.startsWith("e")) return "اي" + transliterateKata(lower.slice(1));
 
-      // Pola e taling (tanpa ي setelah konsonan)
+      // Pola e taling (tanpa ي setelah konsonan seperti 'pergi')
       lower = lower.replace(/per([a-z])/g, (m, p1) => "فر" + p1);
       lower = lower.replace(/sega([a-z]+)/g, (m, p1) => "سگا" + p1);
       lower = lower.replace(/perl([a-z]+)/g, (m, p1) => "فرل" + p1);
