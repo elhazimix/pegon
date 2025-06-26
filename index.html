@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Transliterasi Tulisan Pegon (Fonetik)</title>
+  <title>Transliterasi Pegon (Fonetik)</title>
   <style>
     body {
       font-family: sans-serif;
@@ -42,8 +42,8 @@
   </style>
 </head>
 <body>
-  <h1>Transliterasi Pegon (Fonetik)</h1>
-  <p>Ketik teks Latin di bawah ini, hasil akan muncul otomatis dalam tulisan Pegon JM.</p>
+  <h1>Transliterasi Pegon</h1>
+  <p>Ketik teks Latin di bawah ini, hasil akan muncul otomatis dalam tulisan Pegon JM (fonetik + Pegon Baku).</p>
 
   <textarea id="input" placeholder="Contoh: jangan menyerah, tetap semangat!"></textarea>
   <button class="copy-btn" onclick="copyText('input')">Salin Teks Latin</button>
@@ -64,10 +64,17 @@
       g: "ك", h: "ه", j: "ج", k: "ك",
       l: "ل", m: "م", n: "ن", p: "ف",
       q: "ق", r: "ر", s: "س", t: "ت",
-      v: "ف", w: "و", x: "كس", y: "ي", z: "ز",
+      v: "ف", w: "و", x: "كس", y: "ي", z: "ز"
     };
 
-    const vokal = ['a', 'i', 'u', 'e', 'o'];
+    let pegonBaku = {};
+
+    fetch('pegon_baku.json')
+      .then(res => res.json())
+      .then(data => {
+        pegonBaku = data;
+      })
+      .catch(err => console.error("Gagal memuat pegon_baku.json", err));
 
     function ubahAngka(str) {
       return str.replace(/[0-9]/g, d => angkaArab[d]);
@@ -80,19 +87,16 @@
     }
 
     function transliterateKata(kata) {
-      let lower = kata.toLowerCase();
+      const lower = kata.toLowerCase();
 
-      // Pola awalan khusus
+      if (pegonBaku[lower]) return pegonBaku[lower];
+
+      // Pola awal kata vokal
       if (lower.startsWith("ke")) return "ك" + transliterateKata(lower.slice(2));
       if (lower.startsWith("i")) return "اي" + transliterateKata(lower.slice(1));
       if (lower.startsWith("u")) return "او" + transliterateKata(lower.slice(1));
       if (lower.startsWith("o")) return "او" + transliterateKata(lower.slice(1));
       if (lower.startsWith("e")) return "اي" + transliterateKata(lower.slice(1));
-
-      // Pola e taling (tanpa ي setelah konsonan seperti 'pergi')
-      lower = lower.replace(/per([a-z])/g, (m, p1) => "فر" + p1);
-      lower = lower.replace(/sega([a-z]+)/g, (m, p1) => "سگا" + p1);
-      lower = lower.replace(/perl([a-z]+)/g, (m, p1) => "فرل" + p1);
 
       let hasil = "";
       let i = 0;
