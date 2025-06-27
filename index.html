@@ -46,22 +46,44 @@
     }
 
     function transliterateKata(kata) {
-      const lower = kata.toLowerCase();
-      if (pegonBaku[lower]) return pegonBaku[lower];
-      if (lower.startsWith("ke")) return "ك" + transliterateKata(lower.slice(2));
-      if (lower.startsWith("i")) return "اي" + transliterateKata(lower.slice(1));
-      if (lower.startsWith("u")) return "او" + transliterateKata(lower.slice(1));
-      if (lower.startsWith("o")) return "او" + transliterateKata(lower.slice(1));
-      if (lower.startsWith("e")) return "اي" + transliterateKata(lower.slice(1));
-      let hasil = "", i = 0;
-      while (i < lower.length) {
-        const dua = lower.slice(i, i + 2);
-        if (pegonMap[dua]) { hasil += pegonMap[dua]; i += 2; }
-        else if (pegonMap[lower[i]]) { hasil += pegonMap[lower[i]]; i++; }
-        else { hasil += lower[i]; i++; }
-      }
-      return hasil;
+  // Pisahkan kata dari tanda baca (koma, titik, tanda seru, dsb)
+  const match = kata.match(/^([a-zA-Z]+)([^a-zA-Z]*)$/);
+  if (!match) return kata;
+
+  const [_, baseWord, punctuation] = match;
+  const lower = baseWord.toLowerCase();
+
+  // Cek database Pegon Baku
+  if (pegonBaku[lower]) {
+    return pegonBaku[lower] + punctuation;
+  }
+
+  // Tangani pola awalan fonetik Pegon JM
+  if (lower.startsWith("ke")) return "ك" + transliterateKata(lower.slice(2)) + punctuation;
+  if (lower.startsWith("i")) return "اي" + transliterateKata(lower.slice(1)) + punctuation;
+  if (lower.startsWith("u")) return "او" + transliterateKata(lower.slice(1)) + punctuation;
+  if (lower.startsWith("o")) return "او" + transliterateKata(lower.slice(1)) + punctuation;
+  if (lower.startsWith("e")) return "اي" + transliterateKata(lower.slice(1)) + punctuation;
+
+  // Fonetik biasa
+  let hasil = "";
+  let i = 0;
+  while (i < lower.length) {
+    const dua = lower.slice(i, i + 2);
+    if (pegonMap[dua]) {
+      hasil += pegonMap[dua];
+      i += 2;
+    } else if (pegonMap[lower[i]]) {
+      hasil += pegonMap[lower[i]];
+      i++;
+    } else {
+      hasil += lower[i];
+      i++;
     }
+  }
+
+  return hasil + punctuation;
+}
 
     const input = document.getElementById("input");
     const output = document.getElementById("output");
