@@ -88,24 +88,39 @@
     }
 
 function transliterateKata(kata) {
-  // Pisahkan kata dari tanda baca (koma, titik, dll)
-const match = kata.match(/^([a-zA-Z]+)([^a-zA-Z]*)$/);
-if (match) {
-  const baseWord = match[1];
+  // Pisahkan kata dari tanda baca di akhir
+  const match = kata.match(/^([a-zA-Z]+)([^a-zA-Z]*)$/);
+  if (!match) return kata;
+
+  const baseWord = match[1].toLowerCase();
   const punctuation = match[2] || "";
-  const lower = baseWord.toLowerCase();
 
-  if (pegonBaku[lower]) return pegonBaku[lower] + punctuation;
-
-  let hasil = "", i = 0;
-  while (i < lower.length) {
-    const dua = lower.slice(i, i + 2);
-    if (pegonMap[dua]) { hasil += pegonMap[dua]; i += 2; }
-    else if (pegonMap[lower[i]]) { hasil += pegonMap[lower[i]]; i++; }
-    else { hasil += lower[i]; i++; }
+  // Cek Pegon Baku
+  if (pegonBaku[baseWord]) {
+    return pegonBaku[baseWord] + punctuation;
   }
+
+  // Fonetik biasa
+  let hasil = "";
+  let i = 0;
+  while (i < baseWord.length) {
+    const dua = baseWord.slice(i, i + 2);
+    if (pegonMap[dua]) {
+      hasil += pegonMap[dua];
+      i += 2;
+    } else if (pegonMap[baseWord[i]]) {
+      hasil += pegonMap[baseWord[i]];
+      i++;
+    } else {
+      hasil += baseWord[i];
+      i++;
+    }
+  }
+
   return hasil + punctuation;
-} else {
+}
+
+else {
   // Jika bukan huruf latin biasa, transliterasi seadanya
   return kata;
 }
