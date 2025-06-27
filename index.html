@@ -69,12 +69,13 @@
 
     let pegonBaku = {};
 
-    fetch('pegon_baku.json')
-      .then(res => res.json())
-      .then(data => {
-        pegonBaku = data;
-      })
-      .catch(err => console.error("Gagal memuat pegon_baku.json", err));
+  fetch('pegon_baku.json')
+  .then(res => res.json())
+  .then(data => {
+    for (let key in data) {
+      pegonBaku[key.toLowerCase()] = data[key];
+    }
+  })
 
     function ubahAngka(str) {
       return str.replace(/[0-9]/g, d => angkaArab[d]);
